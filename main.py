@@ -4,6 +4,13 @@ from sqlalchemy.orm import Session
 from database.database import get_db
 from models.user_profile import UserProfile
 from schemas.user_profile import ProfileUpdateSchema
+#-------ram employer analytics ---------
+from fastapi import FastAPI
+from routes.employer_analytics_ram_router import router as analytics_router
+#-------------------------------------------------------
+#-----------ram admin dashboard--------
+from fastapi import FastAPI
+from routes.ram_admin_dashboard import router as dashboard_router
 
 app = FastAPI()
 
@@ -137,3 +144,21 @@ app.add_middleware(
 )
 
 app.include_router(admin_router)
+
+#---------------ram employer analytics----
+# include analytics router
+app.include_router(analytics_router)
+
+
+@app.get("/")
+def root():
+    return {"message": "Analytics API running"}
+
+#-----------ram admin dashboard------
+# include dashboard router
+app.include_router(dashboard_router)
+
+
+@app.get("/")
+def root():
+    return {"message": "API running successfully"}
