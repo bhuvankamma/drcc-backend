@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from database import get_db
-from models import UserProfile
-from schemas import ProfileUpdateSchema
+from database.database import get_db
+from models.user_profile import UserProfile
+from schemas.user_profile import ProfileUpdateSchema
 
 app = FastAPI()
 

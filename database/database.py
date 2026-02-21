@@ -1,5 +1,4 @@
-git checkout -b backend-dev
-git push origin backend-devfrom sqlalchemy import create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 DATABASE_URL = "postgresql://postgres:Ram%40123@localhost:5432/postgres"
