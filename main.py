@@ -3,12 +3,14 @@ from pathlib import Path
 from fastapi import FastAPI, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
+# Database imports
 from database.database import get_db, engine, Base, get_connection
 from models.user_profile import UserProfile
 from schemas.user_profile import ProfileUpdateSchema
 
-# Import All Routers
+# Router imports
 from routes.resume_docs import router as resume_router
 from routes.registrationUser import router as registration_router
 from routes.EmployerLogin import router as EmployerLogin_router
@@ -16,19 +18,15 @@ from routes.employer_analytics_ram_router import router as analytics_router
 from routes.ram_admin_dashboard import router as dashboard_router
 from routes.user_management import router as users_router
 from routes.admin_registration import router as admin_router
-
-app = FastAPI()
-
-
-# Folder where uploaded files are saved
-UPLOAD_DIR = Path(__file__).resolve().parent / "uploads"
-UPLOAD_DIR.mkdir(exist_ok=True)
-=======
-from database.database import Base, engine
 from routes.admin_login import router as auth_router
 
+app = FastAPI(title="DRCC Backend API")
 
-# CORS Middleware
+# Setup Upload Directory
+UPLOAD_DIR = Path(__file__).resolve().parent / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+# CORS Configuration
 ALLOWED_ORIGINS = [
     "https://www.yuvasaathi.in",
     "http://localhost:3000",
@@ -43,7 +41,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include All Routers
+# Include All Routers (Unified)
+app.include_router(auth_router, tags=["Auth"])
 app.include_router(EmployerLogin_router, tags=["Employer Login"])
 app.include_router(resume_router, tags=["Resumes"])
 app.include_router(registration_router, tags=["Registration"])
@@ -52,7 +51,7 @@ app.include_router(admin_router, tags=["Admin"])
 app.include_router(analytics_router, tags=["Analytics"])
 app.include_router(dashboard_router, tags=["Dashboard"])
 
-# Profile Update Endpoint (The one you had in main.py)
+# Profile Update Endpoint
 @app.put("/user/{user_id}", tags=["Profile"])
 def update_user_profile(user_id: int, data: ProfileUpdateSchema, db: Session = Depends(get_db)):
     user = db.query(UserProfile).filter(UserProfile.user_id == user_id).first()
@@ -66,25 +65,30 @@ def update_user_profile(user_id: int, data: ProfileUpdateSchema, db: Session = D
     db.refresh(user)
     return {"message": "Profile updated successfully", "user_id": user.user_id}
 
-<<<<<<< HEAD
 @app.on_event("startup")
-def create_tables():
+def startup_db_setup():
+    # Create SQLAlchemy tables
     Base.metadata.create_all(bind=engine)
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS add_user (
-            id SERIAL PRIMARY KEY,
-            full_name VARCHAR(255) NOT NULL,
-            email VARCHAR(255) UNIQUE NOT NULL,
-            role VARCHAR(50) NOT NULL DEFAULT 'User',
-            status VARCHAR(20) NOT NULL DEFAULT 'Active',
-            created_at TIMESTAMP NOT NULL DEFAULT NOW()
-        );
-    """)
-    conn.commit()
-    cursor.close()
-    conn.close()
+    
+    # Create raw SQL tables if needed
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS add_user (
+                id SERIAL PRIMARY KEY,
+                full_name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                role VARCHAR(50) NOT NULL DEFAULT 'User',
+                status VARCHAR(20) NOT NULL DEFAULT 'Active',
+                created_at TIMESTAMP NOT NULL DEFAULT NOW()
+            );
+        """)
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Startup DB error: {e}")
 
 @app.get("/", tags=["Root"])
 def root():
@@ -101,17 +105,6 @@ async def upload_files(files: list[UploadFile] = File(...)):
         dest.write_bytes(content)
         saved.append({"filename": safe_name, "path": str(dest)})
     return {"message": "Files saved", "files": saved}
-=======
-    return {
-        "message": "Profile updated successfully",
-        "user_id": user.user_id
-    }
 
-
-# ----------------------------------------
-# admin login
-# ----------------------------------------
-
-
-app.include_router(auth_router)
-
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

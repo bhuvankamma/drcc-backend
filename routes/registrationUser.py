@@ -1,11 +1,13 @@
 """API routes: registration, users, lookup."""
 import logging
 
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, HTTPException, Path, Query, Depends
+from sqlalchemy.orm import Session
 
 from crud import create_user, get_user_by_id as crud_get_user_by_id, get_user_by_email as crud_get_user_by_email
 from schemas import ApplicantRegister, UserResponse, LookupItem
 from utils.Registrationauth import hash_password
+from database.database import get_db
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -18,12 +20,13 @@ DEFAULT_ROLE = "Employee"
     summary="Register new applicant",
     responses={400: {"description": "Email already registered or validation error"}},
 )
-def register_applicant(body: ApplicantRegister):
+def register_applicant(body: ApplicantRegister, db: Session = Depends(get_db)):
     name = f"{body.first_name} {body.middle_name or ''} {body.surname}".strip()
     phone_number = f"{body.country_code}{body.mobile_number}" if body.country_code else body.mobile_number
     department = f"{body.preferred_sector} - {body.preferred_job_role}"
     try:
         user = create_user(
+            db=db,
             email=body.email,
             name=name,
             role=DEFAULT_ROLE,
@@ -40,7 +43,7 @@ def register_applicant(body: ApplicantRegister):
             experience=body.employment_history or None,
             skills=body.certifications_skills or None,
         )
-        return UserResponse(**user)
+        return user
     except HTTPException:
         raise
     except Exception as e:
@@ -54,19 +57,20 @@ def register_applicant(body: ApplicantRegister):
 @router.get("/users/by-email/", response_model=UserResponse, responses={404: {"description": "User not found"}})
 def get_user_by_email(
     email: str = Query(..., examples=["rahul.sharma@example.com"], description="User's email"),
+    db: Session = Depends(get_db),
 ):
-    user = crud_get_user_by_email(email)
+    user = crud_get_user_by_email(db, email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return UserResponse(**user)
+    return user
 
 
 @router.get("/users/{user_id}", response_model=UserResponse, responses={404: {"description": "User not found"}})
-def get_user_by_id(user_id: int = Path(..., examples=[1], description="User ID")):
-    user = crud_get_user_by_id(user_id)
+def get_user_by_id(user_id: int = Path(..., examples=[1], description="User ID"), db: Session = Depends(get_db)):
+    user = crud_get_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return UserResponse(**user)
+    return user
 
 
 QUALIFICATIONS = [

@@ -14,6 +14,7 @@ class TestInsertSchema(BaseModel):
 # Update profile schema
 class ProfileUpdateSchema(BaseModel):
 
+<<<<<<< HEAD
     address: str 
     previous_ctc: str 
     expected_ctc: str 
@@ -29,3 +30,13 @@ class ProfileUpdateSchema(BaseModel):
     experience: str
     skills: str 
 >>>>>>> db0cdd6 (adminlogin)
+=======
+    address: str | None = None
+    previous_ctc: str | None = None
+    expected_ctc: str | None = None
+    notice_period: str | None = None
+    field_of_work: str | None = None
+    education: str | None = None
+    experience: str | None = None
+    skills: str | None = None 
+>>>>>>> deef17e (Refactor to SQLAlchemy, finalize backend integration, remove tracked cache files)
