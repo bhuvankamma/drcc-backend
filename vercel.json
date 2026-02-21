@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "app.py", "use": "@vercel/python" },
+    { "src": "backend/otp_service.py", "use": "@vercel/python" },
+    { "src": "api/index.js", "use": "@vercel/node", "config": { "maxDuration": 60 } },
+    { "src": "api/debug_env.py", "use": "@vercel/python" }
+  ],
+  "rewrites": [
+    { "source": "/api/generate-otp", "destination": "/backend/otp_service.py" },
+    { "source": "/api/debug_env", "destination": "/api/debug_env.py" },
+
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    }
+  ]
+}
