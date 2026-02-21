@@ -14,6 +14,7 @@ from schemas.user_profile import ProfileUpdateSchema
 from routes.resume_docs import router as resume_router
 from routes.registrationUser import router as registration_router
 from routes.EmployerLogin import router as EmployerLogin_router
+from routes.UserLogin import router as UserLogin_router  # Added this!
 from routes.employer_analytics_ram_router import router as analytics_router
 from routes.ram_admin_dashboard import router as dashboard_router
 from routes.user_management import router as users_router
@@ -41,8 +42,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include All Routers (Unified)
+# Include All Routers (Unified & Organized)
 app.include_router(auth_router, tags=["Auth"])
+app.include_router(UserLogin_router, tags=["User Login"])
 app.include_router(EmployerLogin_router, tags=["Employer Login"])
 app.include_router(resume_router, tags=["Resumes"])
 app.include_router(registration_router, tags=["Registration"])
@@ -67,10 +69,7 @@ def update_user_profile(user_id: int, data: ProfileUpdateSchema, db: Session = D
 
 @app.on_event("startup")
 def startup_db_setup():
-    # Create SQLAlchemy tables
     Base.metadata.create_all(bind=engine)
-    
-    # Create raw SQL tables if needed
     try:
         conn = get_connection()
         cursor = conn.cursor()
