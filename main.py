@@ -7,6 +7,15 @@ from schemas.user_profile import ProfileUpdateSchema
 
 app = FastAPI()
 
+from fastapi import FastAPI
+from routes.user_management import router as users_router
+from database.database import get_connection
+
+
+from fastapi.middleware.cors import CORSMiddleware
+
+from database.database import engine, Base
+from routes.admin_registration import router as admin_router
 
 # ----------------------------------------
 # GET PROFILE (Dashboard Load)
@@ -80,3 +89,51 @@ def update_profile(
         "message": "Profile updated successfully",
         "user_id": user.user_id
     }
+
+# ----------------------------------------
+# admin dashboard user management
+# ----------------------------------------
+
+app.include_router(users_router, prefix="/users", tags=["Users"])
+
+@app.on_event("startup")
+def create_tables():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS add_user (
+            id SERIAL PRIMARY KEY,
+            full_name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            role VARCHAR(50) NOT NULL DEFAULT 'User',
+            status VARCHAR(20) NOT NULL DEFAULT 'Active',
+            created_at TIMESTAMP NOT NULL DEFAULT NOW()
+        );
+    """)
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+# ----------------------------------------
+# admin registration
+# ----------------------------------------
+Base.metadata.create_all(bind=engine)
+
+ALLOWED_ORIGINS = [
+    "https://www.yuvasaathi.in",
+    "http://localhost:3000",
+    "https://www.yuvasaathiadmin.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(admin_router)
