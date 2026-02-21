@@ -19,9 +19,14 @@ from routes.admin_registration import router as admin_router
 
 app = FastAPI()
 
+
 # Folder where uploaded files are saved
 UPLOAD_DIR = Path(__file__).resolve().parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
+=======
+from database.database import Base, engine
+from routes.admin_login import router as auth_router
+
 
 # CORS Middleware
 ALLOWED_ORIGINS = [
@@ -61,6 +66,7 @@ def update_user_profile(user_id: int, data: ProfileUpdateSchema, db: Session = D
     db.refresh(user)
     return {"message": "Profile updated successfully", "user_id": user.user_id}
 
+<<<<<<< HEAD
 @app.on_event("startup")
 def create_tables():
     Base.metadata.create_all(bind=engine)
@@ -95,3 +101,17 @@ async def upload_files(files: list[UploadFile] = File(...)):
         dest.write_bytes(content)
         saved.append({"filename": safe_name, "path": str(dest)})
     return {"message": "Files saved", "files": saved}
+=======
+    return {
+        "message": "Profile updated successfully",
+        "user_id": user.user_id
+    }
+
+
+# ----------------------------------------
+# admin login
+# ----------------------------------------
+
+
+app.include_router(auth_router)
+

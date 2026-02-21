@@ -18,7 +18,14 @@ class ProfileUpdateSchema(BaseModel):
     previous_ctc: str 
     expected_ctc: str 
     notice_period: str
+<<<<<<< HEAD
     field_of_work: str
     education: str 
     experience: str 
     skills: str
+=======
+    field_of_work: str 
+    education: str 
+    experience: str
+    skills: str 
+>>>>>>> db0cdd6 (adminlogin)
