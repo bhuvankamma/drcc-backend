@@ -13,6 +13,8 @@ SessionLocal = sessionmaker(
 
 Base = declarative_base()
 
+def get_connection():
+    return engine.raw_connection()
 
 def get_db():
     db = SessionLocal()

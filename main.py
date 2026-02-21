@@ -7,6 +7,8 @@ from schemas.user_profile import ProfileUpdateSchema
 
 app = FastAPI()
 
+from database.database import Base, engine
+from routes.admin_login import router as auth_router
 
 # ----------------------------------------
 # GET PROFILE (Dashboard Load)
@@ -80,3 +82,11 @@ def update_profile(
         "message": "Profile updated successfully",
         "user_id": user.user_id
     }
+
+
+# ----------------------------------------
+# admin login
+# ----------------------------------------
+
+
+app.include_router(auth_router)
