@@ -14,6 +14,7 @@ from schemas.user_profile import ProfileUpdateSchema
 from routes.resume_docs import router as resume_router
 from routes.registrationUser import router as registration_router
 from routes.EmployerLogin import router as EmployerLogin_router
+
 from routes.UserLogin import router as UserLogin_router  # Added this!
 from routes.employer_analytics_ram_router import router as analytics_router
 from routes.ram_admin_dashboard import router as dashboard_router
@@ -24,6 +25,18 @@ from routes.admin_login import router as auth_router
 app = FastAPI(title="DRCC Backend API")
 
 # Setup Upload Directory
+
+from routes.UserLogin import router as UserLogin_router
+from routes.EmployerRegistration import router as registrationemployer_router
+app = FastAPI()
+app.include_router(EmployerLogin_router)
+app.include_router(resume_router)
+app.include_router(registration_router)
+app.include_router(UserLogin_router)
+app.include_router(registrationemployer_router)
+
+# Folder where uploaded files are saved (inside project)
+
 UPLOAD_DIR = Path(__file__).resolve().parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 

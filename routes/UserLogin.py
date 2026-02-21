@@ -7,14 +7,14 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from jose import jwt
 
-from database import get_db
-from schemas import (
+from database.database import get_db
+from schemas.UserLogin import (
     LoginRequest,
     GenerateOTPResponse,
     VerifyOTPRequest,
     TokenResponse,
 )
-from crud import (
+from crud.UserLogin import (
     authenticate_and_send_otp,
     get_user_by_email_or_phone,
     verify_otp_and_get_user,

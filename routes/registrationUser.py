@@ -4,8 +4,12 @@ import logging
 from fastapi import APIRouter, HTTPException, Path, Query, Depends
 from sqlalchemy.orm import Session
 
-from crud import create_user, get_user_by_id as crud_get_user_by_id, get_user_by_email as crud_get_user_by_email
-from schemas import ApplicantRegister, UserResponse, LookupItem
+from crud.registrationUser import (
+    create_user,
+    get_user_by_id as crud_get_user_by_id,
+    get_user_by_email as crud_get_user_by_email,
+)
+from schemas.registrationUser import ApplicantRegister, UserResponse, LookupItem
 from utils.Registrationauth import hash_password
 from database.database import get_db
 
