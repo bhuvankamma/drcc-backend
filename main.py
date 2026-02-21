@@ -9,7 +9,8 @@ app = FastAPI()
 
 from database.database import Base, engine
 from routes.admin_login import router as auth_router
-
+import models.system_settings
+from routes.system_settings import router as system_settings_router
 # ----------------------------------------
 # GET PROFILE (Dashboard Load)
 # ----------------------------------------
@@ -90,3 +91,8 @@ def update_profile(
 
 
 app.include_router(auth_router)
+# ----------------------------------------
+# system_settings
+# ----------------------------------------
+# run in .venv environment
+app.include_router(system_settings_router)
