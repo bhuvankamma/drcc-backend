@@ -18,9 +18,7 @@ uvicorn==0.34.0
 sqlalchemy==2.0.36
 psycopg2-binary==2.9.11
 pydantic==2.10.6
-
 python-multipart==0.0.17
-
 pydantic[email]  
 psycopg
 python-dotenv 
@@ -29,4 +27,5 @@ sqlalchemy
 passlib[bcrypt] 
 python-jose
 argon2_cffi
+python-multipart
 

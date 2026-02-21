@@ -97,6 +97,20 @@ def startup_db_setup():
 @app.get("/", tags=["Root"])
 def root():
     return {"message": "DRCC Backend API running successfully"}
+=======
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from database.database import Base, engine
+import models.user_settings  # IMPORTANT: ensures models are registered
+from routes.user_settings import router as user_router
+
+app = FastAPI()
+import os
+from pathlib import Path
+from database.database import Base, engine, get_db
+from routes.admin_login import router as auth_router
+import models.system_settings
+from routes.system_settings import router as system_settings_router
 
 @app.post("/upload", tags=["Upload"])
 async def upload_files(files: list[UploadFile] = File(...)):
@@ -112,3 +126,28 @@ async def upload_files(files: list[UploadFile] = File(...)):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+app.include_router(auth_router)
+# ----------------------------------------
+# system_settings
+# ----------------------------------------
+# run in .venv environment
+app.include_router(system_settings_router)
+
+
+# ----------------------------------------
+# user_settings
+# ----------------------------------------
+
+# Uploads directory
+UPLOAD_DIR = Path(__file__).resolve().parent / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+
+# Include router
+app.include_router(user_router)
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/docs", status_code=302)
+
