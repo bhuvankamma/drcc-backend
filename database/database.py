@@ -6,7 +6,7 @@ import logging
  
 load_dotenv()
 
-DATABASE_URL = "postgresql://postgres:Ram%40123@localhost:5432/postgres"
+DATABASE_URL = "postgresql://postgres:Sumanth%401999@localhost:5432/postgres"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
