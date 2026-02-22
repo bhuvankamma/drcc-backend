@@ -3,9 +3,11 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 from database.database import Base
 
-
 class User(Base):
     __tablename__ = "user_profiles"
+    # Add this line below __tablename__
+    __table_args__ = {'extend_existing': True} 
+
     user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     email = Column(String(255), unique=True, nullable=False, index=True)
     name = Column(String(255), nullable=False)

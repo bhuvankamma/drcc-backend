@@ -1,42 +1,22 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 # Insert test user (only 5 columns)
 class TestInsertSchema(BaseModel):
-
     email: str
     name: str
     password: str
     role: str
     phone_number: str
 
-
 # Update profile schema
+# Using Optional (| None = None) so updates don't require every single field
 class ProfileUpdateSchema(BaseModel):
-
-<<<<<<< HEAD
-    address: str 
-    previous_ctc: str 
-    expected_ctc: str 
-    notice_period: str
-<<<<<<< HEAD
-    field_of_work: str
-    education: str 
-    experience: str 
-    skills: str
-=======
-    field_of_work: str 
-    education: str 
-    experience: str
-    skills: str 
->>>>>>> db0cdd6 (adminlogin)
-=======
-    address: str | None = None
-    previous_ctc: str | None = None
-    expected_ctc: str | None = None
-    notice_period: str | None = None
-    field_of_work: str | None = None
-    education: str | None = None
-    experience: str | None = None
-    skills: str | None = None 
->>>>>>> deef17e (Refactor to SQLAlchemy, finalize backend integration, remove tracked cache files)
+    address: Optional[str] = None
+    previous_ctc: Optional[str] = None
+    expected_ctc: Optional[str] = None
+    notice_period: Optional[str] = None
+    field_of_work: Optional[str] = None
+    education: Optional[str] = None
+    experience: Optional[str] = None
+    skills: Optional[str] = None
