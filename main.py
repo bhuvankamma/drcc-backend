@@ -21,6 +21,11 @@ from database.database import engine, Base
 import models  # noqa: F401 - register models with Base
 from routes.admin_profile import router as admin_profile
 
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import database.database
+from routes.admin_content_management import router as admin_content_management
 # ----------------------------------------
 # admin login
 # ----------------------------------------
@@ -85,3 +90,24 @@ def root():
 static_path = Path(__file__).parent / "static"
 if static_path.exists():
     app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+
+# ----------------------------------------
+# admin content management
+# ----------------------------------------
+app = FastAPI(title="CMS Backend")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.on_event("startup")
+def startup_event():
+    models.admin_content_management.create_table()   # 👈 this creates table automatically
+    print("Table created successfully!")
+
+app.include_router(admin_content_management)
