@@ -80,3 +80,44 @@ def update_profile(
         "message": "Profile updated successfully",
         "user_id": user.user_id
     }
+
+#===================sravya resume template===========
+
+from fastapi import FastAPI
+from sqlalchemy.orm import Session
+from database.database import engine, SessionLocal
+from models import resume_template
+from routes import sravya_templates, sravya_resumes
+
+resume_template.Base.metadata.create_all(bind=engine)
+
+#app = FastAPI(title="Resume Backend API")
+
+app.include_router(sravya_templates.router)
+app.include_router(sravya_resumes.router)
+
+
+def seed_templates():
+    db: Session = SessionLocal()
+    if db.query(resume_template.Template).first():
+        db.close()
+        return
+
+    templates_data = [
+        resume_template.Template(name="Standard Professional", description="Clean and classic corporate resume", preview_url="standard.png"),
+        resume_template.Template(name="Modern & Creative", description="Stylish resume with colored sections", preview_url="modern.png"),
+        resume_template.Template(name="Minimalist Design", description="Simple and elegant resume layout", preview_url="minimal.png"),
+        resume_template.Template(name="Academic & Research", description="Detailed academic CV format", preview_url="academic.png"),
+    ]
+
+    db.add_all(templates_data)
+    db.commit()
+    db.close()
+
+
+seed_templates()
+
+
+@app.get("/")
+def root():
+    return {"message": "Resume Backend Running 🚀"}
